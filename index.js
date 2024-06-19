@@ -23,7 +23,7 @@ app.post('/api/scores', (req, res) => {
         if(err) {
             if(err.code === 'ENOENT') {
                 // Si le fichier n'existe pas, initialiser avec un tableau vide
-                data = '[]';
+                data = '[]'
             }
             else {
                 console.error('Error reading file:', err)
@@ -36,7 +36,7 @@ app.post('/api/scores', (req, res) => {
             scores = JSON.parse(data)
         } catch (parseError) {
             console.error('Error parsing JSON:',parseError)
-            scores = [];
+            scores = []
         }
 
         scores.push(newScore)
@@ -67,7 +67,7 @@ app.get('/api/scores', (req, res) => {
             }
         }
     
-        let scores;
+        let scores
         try {
             scores = JSON.parse(data)
         } catch (parseError) {
@@ -82,11 +82,11 @@ app.get('/api/scores', (req, res) => {
 // Endpoint pour mettre à jour un score
 app.put('/api/scores/:index', (req, res) => {
     const scoreIndex = parseInt(req.params.index, 10)
-    const updatedScore = req.body;
+    const updatedScore = req.body
 
     fs.readFile(SCORES_FILE, 'utf-8', (err, data) => {
         if (err) {
-            console.error('Error reading file', err);
+            console.error('Error reading file', err)
             return res.status(500).json({ error: 'Internal Server Error' })
         }
 
