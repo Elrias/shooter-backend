@@ -1,16 +1,20 @@
 const express = require('express')
-const bodyParser = require('body-parser')
 const fs = require('fs')
 const cors = require('cors')
 
 const app = express()
+const port = process.env.PORT || 3000
 const SCORES_FILE = 'scores.json'
 
 // Middleware CORS
 app.use(cors()) // autorise les requêtes provenant de domaines différents
 
 // Middleware pour parser le corps des requêtes en JSON
-app.use(bodyParser.json())
+app.use(express.json())
+
+app.get('/',(req, res) => {
+  res.send('Bienvenue sur mon API !')
+})
 
 // Endpoint pour enregistrer les scores
 app.post('/api/scores', (req, res) => {
@@ -116,4 +120,6 @@ app.put('/api/scores/:index', (req, res) => {
     })
 })
 
-module.exports = app
+app.listen(port, () => {
+  console.log(`Serveur démarré sur le port ${port}`)
+})
