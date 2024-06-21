@@ -59,7 +59,7 @@ app.get('/',(req, res) => {
 })
 
 // Endpoint pour enregistrer les scores
-app.post('/api/scores', (req, res) => {
+app.post('/api/scores', authenticateToken, (req, res) => {
     const newScore = req.body
 
     console.log('Received new score:', newScore)
@@ -126,7 +126,7 @@ app.get('/api/scores', (req, res) => {
 })
 
 // Endpoint pour mettre à jour un score
-app.put('/api/scores/:index', (req, res) => {
+app.put('/api/scores/:index', authenticateToken, (req, res) => {
     const scoreIndex = parseInt(req.params.index, 10)
     const updatedScore = req.body
 
