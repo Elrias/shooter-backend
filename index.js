@@ -3,7 +3,7 @@ const fs = require('fs')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
 
-const secretKey = `c@Nv4_5h0ot3r_k3Y`
+const secretKey = process.env.envKey
 
 // Middleware JWT
 function authenticateToken(req, res, next) {
