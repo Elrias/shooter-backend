@@ -61,7 +61,7 @@ app.get('/api/token', (req, res) => {
     console.log('Sending token.')
     const payload = { app: 'canvasShooter' }
     try {
-      const token = jwt.sign(payload, secretKey, { expiresIn: '10s' })
+      const token = jwt.sign(payload, secretKey, { expiresIn: '5s' })
       res.json({ token })
     } catch(error) {
       console.error('Error generating token:', error)
