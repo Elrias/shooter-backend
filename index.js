@@ -4,7 +4,7 @@ const cors = require('cors')
 const jwt = require('jsonwebtoken')
 
 const secretKey = process.env.envKey
-console.log(secretKey)
+
 // Middleware JWT
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']
@@ -20,6 +20,11 @@ function authenticateToken(req, res, next) {
         req.user = user
         next()
     });
+}
+
+// Vérification du score
+function isValidScore(score) {
+    return Number.isInteger(score) && score >= 0 && score <= 100000; // Exemple de validation
 }
 
 const app = express()
@@ -55,21 +60,24 @@ app.get('/api/token', (req, res) => {
       res.json({ token })
     } catch(error) {
       console.error('Error generating token:', error)
-      res.status(500).json({ error: 'Erreur lors de la génération du token'})
+      res.status(500).json({ error: 'Error generating token'})
     }
       
 })
 
 app.get('/',(req, res) => {
-  res.send('Bienvenue sur mon API !')
+  res.send('Welcome to my API !')
 })
 
 // Endpoint pour enregistrer les scores
 app.post('/api/scores', authenticateToken, (req, res) => {
     const newScore = req.body
-
     console.log('Received new score:', newScore)
-
+  
+    if(!isValidScore(newScore.score)) {
+      return res.status(400).json({ error: 'Score is invalid' })
+    }
+    
     // Lire les scores existants
     fs.readFile(SCORES_FILE, 'utf8', (err, data) => {
         if(err) {
