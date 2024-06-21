@@ -3,11 +3,28 @@ const fs = require('fs')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
 
+const secretKey = 'c@Nv4-5h0ot3r-k3Y'
+
+// Middleware JWT
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (token == null) {
+        return res.sendStatus(401);
+    } 
+
+    jwt.verify(token, secretKey, (err, user) => {
+        if (err) {
+            return res.sendStatus(403);
+        } 
+        req.user = user;
+        next();
+    });
+}
+
 const app = express()
 const port = process.env.PORT || 3000
 const SCORES_FILE = 'scores.json'
-
-const secretKey = 'c@Nv4-5h0ot3r-k3Y'
 
 const allowedOrigins = ['https://elrias.github.io']
 
@@ -28,6 +45,14 @@ app.use(cors(corsOptions)) // autorise les requêtes provenant de domaines diff�
 
 // Middleware pour parser le corps des requêtes en JSON
 app.use(express.json())
+
+// Route pour obtenir le token JWT statique
+app.get('/api/token', (req, res) => {
+    console.log('Sending token.')
+    const payload = { app: 'canvas-shooter' };
+    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
+    res.json({ token });
+});
 
 app.get('/',(req, res) => {
   res.send('Bienvenue sur mon API !')
