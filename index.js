@@ -6,8 +6,21 @@ const app = express()
 const port = process.env.PORT || 3000
 const SCORES_FILE = 'scores.json'
 
+const allowedOrigins = ['https://elrias.github.io']
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true)
+        }
+        else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+}
+
 // Middleware CORS
-app.use(cors()) // autorise les requêtes provenant de domaines différents
+app.use(cors(corsOptions)) // autorise les requêtes provenant de domaines différents
 
 // Middleware pour parser le corps des requêtes en JSON
 app.use(express.json())
