@@ -4,7 +4,7 @@ const cors = require('cors')
 const jwt = require('jsonwebtoken')
 
 const secretKey = process.env.envKey
-
+console.log(secretKey)
 // Middleware JWT
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']
