@@ -22,6 +22,11 @@ function authenticateToken(req, res, next) {
     });
 }
 
+// Vérification du nom
+function isValidName(name) {
+    return typeof name === 'string' && name.trim().length > 0;
+}
+
 // Vérification du score
 function isValidScore(score) {
     return Number.isInteger(score) && score >= 0 && score <= 100000; // Exemple de validation
@@ -56,7 +61,7 @@ app.get('/api/token', (req, res) => {
     console.log('Sending token.')
     const payload = { app: 'canvasShooter' }
     try {
-      const token = jwt.sign(payload, secretKey, { expiresIn: '30s' })
+      const token = jwt.sign(payload, secretKey, { expiresIn: '10s' })
       res.json({ token })
     } catch(error) {
       console.error('Error generating token:', error)
@@ -76,6 +81,10 @@ app.post('/api/scores', authenticateToken, (req, res) => {
   
     if(!isValidScore(newScore.score)) {
       return res.status(400).json({ error: 'Score is invalid' })
+    }
+  
+    if (!isValidName(newScore.name)) {
+        return res.status(400).json({ error: 'Name is invalid.' })
     }
     
     // Lire les scores existants
@@ -144,6 +153,14 @@ app.put('/api/scores/:index', authenticateToken, (req, res) => {
     const scoreIndex = parseInt(req.params.index, 10)
     const updatedScore = req.body
 
+    if(!isValidScore(updatedScore.score)) {
+      return res.status(400).json({ error: 'Score is invalid' })
+    }
+  
+    if (!isValidName(updatedScore.name)) {
+        return res.status(400).json({ error: 'Name is invalid.' })
+    }
+    
     fs.readFile(SCORES_FILE, 'utf-8', (err, data) => {
         if (err) {
             console.error('Error reading file', err)
