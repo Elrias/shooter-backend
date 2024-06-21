@@ -7,18 +7,18 @@ const secretKey = process.env.envKey
 
 // Middleware JWT
 function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
     if (token == null) {
-        return res.sendStatus(401);
+        return res.sendStatus(401)
     } 
 
     jwt.verify(token, secretKey, (err, user) => {
         if (err) {
-            return res.sendStatus(403);
+            return res.sendStatus(403)
         } 
-        req.user = user;
-        next();
+        req.user = user
+        next()
     });
 }
 
@@ -49,10 +49,16 @@ app.use(express.json())
 // Route pour obtenir le token JWT statique
 app.get('/api/token', (req, res) => {
     console.log('Sending token.')
-    const payload = { app: 'canvas-shooter' };
-    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
-    res.json({ token });
-});
+    const payload = { app: 'canvasShooter' }
+    try {
+      const token = jwt.sign(payload, secretKey, { expiresIn: '1h' })
+      res.json({ token })
+    } catch(error) {
+      console.error('Error generating token:', error)
+      res.status(500).json({ error: 'Erreur lors de la génération du token'})
+    }
+      
+})
 
 app.get('/',(req, res) => {
   res.send('Bienvenue sur mon API !')
@@ -118,7 +124,7 @@ app.get('/api/scores', (req, res) => {
             scores = JSON.parse(data)
         } catch (parseError) {
             console.error('Error parsing JSON:', parseError)
-            scores = [];
+            scores = []
         }
 
         res.status(200).json(scores)
