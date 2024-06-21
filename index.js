@@ -1,10 +1,25 @@
 const express = require('express')
 const fs = require('fs')
 const cors = require('cors')
+const jwt = require('jsonwebtoken')
 
 const app = express()
 const port = process.env.PORT || 3000
 const SCORES_FILE = 'scores.json'
+
+const secretKey = 'c@Nv4-5h0ot3r-k3Y'
+
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+    if (token == null) return res.sendStatus(401)
+
+    jwt.verify(token, secretKey, (err, user) => {
+        if (err) return res.sendStatus(403)
+        req.user = user
+        next()
+    });
+}
 
 const allowedOrigins = ['https://elrias.github.io']
 
@@ -30,8 +45,14 @@ app.get('/',(req, res) => {
   res.send('Bienvenue sur mon API !')
 })
 
+app.get('/api/token', (req, res) => {
+  const payload = {app: 'canvas-shooter'}
+  const token = jwt.sign(payload, secretKey, { exipiresIn: '1h'})
+  res.json({ token })
+})
+
 // Endpoint pour enregistrer les scores
-app.post('/api/scores', (req, res) => {
+app.post('/api/scores', authenticateToken, (req, res) => {
     const newScore = req.body
 
     console.log('Received new score:', newScore)
@@ -73,7 +94,7 @@ app.post('/api/scores', (req, res) => {
 })
 
 // Endpoint pour récupérer les scores
-app.get('/api/scores', (req, res) => {
+app.get('/api/scores', authenticateToken, (req, res) => {
     fs.readFile(SCORES_FILE, 'utf8', (err, data) => {
         if (err) {
             if (err.code === 'ENOENT') {
@@ -98,7 +119,7 @@ app.get('/api/scores', (req, res) => {
 })
 
 // Endpoint pour mettre à jour un score
-app.put('/api/scores/:index', (req, res) => {
+app.put('/api/scores/:index', authenticateToken, (req, res) => {
     const scoreIndex = parseInt(req.params.index, 10)
     const updatedScore = req.body
 
