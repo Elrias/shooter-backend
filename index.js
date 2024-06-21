@@ -10,6 +10,7 @@ const allowedOrigins = ['https://elrias.github.io']
 
 const corsOptions = {
     origin: function (origin, callback) {
+        console.log('Origin:', origin); // Log de l'origine pour le debugging
         if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
             callback(null, true)
         }
